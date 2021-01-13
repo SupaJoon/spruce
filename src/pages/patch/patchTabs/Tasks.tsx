@@ -42,7 +42,51 @@ import { parseSortString } from "./Util";
 interface Props {
   taskCount: number;
 }
-
+const columnsTemplate: Array<ColumnProps<TaskResult>> = [
+  {
+    title: "Name",
+    sortOrder: "ascend",
+    dataIndex: "displayName",
+    key: TaskSortCategory.Name,
+    sorter: {
+      multiple: 4,
+    },
+    width: "40%",
+    className: "cy-task-table-col-NAME",
+    render: (name: string, { id }: TaskResult): JSX.Element => (
+      <TaskLink taskName={name} taskId={id} />
+    ),
+  },
+  {
+    title: "Patch Status",
+    dataIndex: "status",
+    key: TaskSortCategory.Status,
+    sorter: {
+      multiple: 4,
+    },
+    className: "cy-task-table-col-STATUS",
+    render: () => <div />,
+  },
+  {
+    title: "Base Status",
+    dataIndex: "baseStatus",
+    key: TaskSortCategory.BaseStatus,
+    sorter: {
+      multiple: 4,
+    },
+    className: "cy-task-table-col-BASE_STATUS",
+    render: () => <div />,
+  },
+  {
+    title: "Variant",
+    dataIndex: "buildVariant",
+    key: TaskSortCategory.Variant,
+    sorter: {
+      multiple: 4,
+    },
+    className: "cy-task-table-col-VARIANT",
+  },
+];
 export const Tasks: React.FC<Props> = ({ taskCount }) => {
   const { id: resourceId } = useParams<{ id: string }>();
 
@@ -73,82 +117,6 @@ export const Tasks: React.FC<Props> = ({ taskCount }) => {
     showSkeleton = false;
   }
   useNetworkStatus(startPolling, stopPolling);
-
-  const columnsTemplate: Array<ColumnProps<TaskResult>> = [
-    {
-      title: "Name",
-      dataIndex: "displayName",
-      key: TaskSortCategory.Name,
-      sorter: {
-        multiple: 4,
-      },
-      width: "40%",
-      className: "cy-task-table-col-NAME",
-      render: (name: string, { id }: TaskResult): JSX.Element => (
-        <TaskLink taskName={name} taskId={id} />
-      ),
-    },
-    {
-      title: "Patch Status",
-      dataIndex: "status",
-      key: TaskSortCategory.Status,
-      sorter: {
-        multiple: 4,
-      },
-      className: "cy-task-table-col-STATUS",
-      render: renderStatusBadge,
-    },
-    {
-      title: "Base Status",
-      dataIndex: "baseStatus",
-      key: TaskSortCategory.BaseStatus,
-      sorter: {
-        multiple: 4,
-      },
-      className: "cy-task-table-col-BASE_STATUS",
-      render: renderStatusBadge,
-    },
-    {
-      title: "Variant",
-      dataIndex: "buildVariant",
-      key: TaskSortCategory.Variant,
-      sorter: {
-        multiple: 4,
-      },
-      className: "cy-task-table-col-VARIANT",
-    },
-  ];
-  if (sorts.length === 0) {
-    // works around a quirk/bug in the antd table where default sorts don't
-    // get updated on subsequent renders
-    columnsTemplate[1].defaultSortOrder = "ascend";
-    columnsTemplate[2].defaultSortOrder = "ascend";
-  } else {
-    sorts.forEach((sort) => {
-      const direction =
-        sort.Direction === SortDirection.Desc ? "descend" : "ascend";
-      switch (sort.Key) {
-        case TaskSortCategory.Name: {
-          columnsTemplate[0].defaultSortOrder = direction;
-          break;
-        }
-        case TaskSortCategory.Status: {
-          columnsTemplate[1].defaultSortOrder = direction;
-          break;
-        }
-        case TaskSortCategory.BaseStatus: {
-          columnsTemplate[2].defaultSortOrder = direction;
-          break;
-        }
-        case TaskSortCategory.Variant: {
-          columnsTemplate[3].defaultSortOrder = direction;
-          break;
-        }
-        default:
-          break;
-      }
-    });
-  }
 
   const patchAnalytics = usePatchAnalytics();
 

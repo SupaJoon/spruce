@@ -17,9 +17,9 @@ interface Props {
 export const TasksTable: React.FC<Props> = ({ data, columns }) => {
   const { replace } = useHistory();
   const { search, pathname } = useLocation();
-
   const patchAnalytics = usePatchAnalytics();
   const tableChangeHandler: TableOnChange<TaskResult> = (...[, , sorter]) => {
+    console.log("you would have to write  ");
     const nextQueryParams = stringifyQuery({
       ...parseQueryString(search),
       sorts: toSortString(sorter),
